@@ -15,7 +15,15 @@ class OrderOptions(models.TextChoices):
 
 class Order(models.Model):
     status = models.CharField(
-        max_length=127, choices=OrderOptions, default=OrderOptions.DEFAULT
+        max_length=127, choices=OrderOptions.choices, default=OrderOptions.DEFAULT
     )
 
     created_at = models.DateField(auto_now_add=True)
+
+    user = models.ForeignKey(
+        "users.User", on_delete=models.PROTECT, related_name="Orders"
+    )
+
+    saller = models.ForeignKey(
+        "users.User", on_delete=models.PROTECT, related_name="Saller"
+    )

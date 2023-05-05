@@ -7,4 +7,10 @@ class OrderSerializer(serializers.ModelSerializer):
         return Order.objects.create(**validated_data)
 
     model = Order
-    fields = ["status"]
+    fields = ["created_at"]
+
+    extra_kwargs = {
+        "status": {
+            serializers.ChoiceField(choices=OrderOptions, default=OrderOptions.DEFAULT)
+        }
+    }
