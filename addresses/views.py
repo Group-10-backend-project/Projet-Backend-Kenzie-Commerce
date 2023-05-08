@@ -9,7 +9,6 @@ class AddressView(generics.ListCreateAPIView):
     serializer_class = AddressSerializer
 
     def perform_create(self, serializer):
-        ipdb.set_trace()
         return serializer.save(user_id=self.kwargs.get("user_id"))
 
 
