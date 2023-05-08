@@ -1,9 +1,9 @@
 from rest_framework import serializers
 from .models import Address
+from users.serializers import UserSerializer
 
 
 class AddressSerializer(serializers.ModelSerializer):
-
     def create(self, validated_data: dict) -> Address:
         return Address.objects.create(**validated_data)
 
@@ -15,6 +15,11 @@ class AddressSerializer(serializers.ModelSerializer):
         instance.save()
         return instance
 
+    user = UserSerializer(read_only=True)
+
     class Meta:
         model = Address
-        fields = ['street', 'number', 'city', 'user_id']
+        fields = ['street', 'number', 'city', 'user']
+        extra_kwargs = {
+            'user_id': {"source": "user"}
+        }
