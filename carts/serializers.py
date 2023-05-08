@@ -12,5 +12,4 @@ class CartSerializer(serializers.ModelSerializer):
         fields = ['is_active', "products", "user_id"]
 
     def create(self, validated_data):
-        ipdb.set_trace()
         return Cart.objects.create(**validated_data)
