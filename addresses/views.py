@@ -4,7 +4,7 @@ from .serializers import AddressSerializer
 import ipdb
 
 
-class AddressView(generics.ListCreateAPIView):
+class AddressView(generics.CreateAPIView):
     queryset = Address.objects.all()
     serializer_class = AddressSerializer
 
