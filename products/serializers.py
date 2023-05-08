@@ -26,8 +26,9 @@ class ProductSerializer(serializers.ModelSerializer):
             'description',
             'amount',
             'price',
-            'is_available',
             'category',
+            'user_id',
+            'is_available',
         ]
         extra_kwargs = {
             'id': {'read_only': True},
