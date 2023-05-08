@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from rest_framework.serializers import SerializerMethodField
 from rest_framework.validators import UniqueValidator
 from .models import Product
 
@@ -15,6 +16,8 @@ class ProductSerializer(serializers.ModelSerializer):
         instance.save()
         return instance
 
+    is_available = serializers.SerializerMethodField()
+
     class Meta:
         model = Product
         fields = [
@@ -23,9 +26,12 @@ class ProductSerializer(serializers.ModelSerializer):
             'description',
             'amount',
             'price',
-            'user_id',
+            'is_available',
         ]
         extra_kwargs = {
             'id': {'read_only': True},
             'user_id': {'read_only': True},
         }
+
+    def get_is_available(self, obj):
+        return obj.amount > 0
