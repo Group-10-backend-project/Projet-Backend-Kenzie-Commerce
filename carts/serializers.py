@@ -44,14 +44,14 @@ class CartSerializer(serializers.ModelSerializer):
             'is_active': {'read_only': True}
         }
 
-    def validate(self, data):
-        if not Product.objects.filter(id=data['products'].id).exists():
-            raise serializers.ValidationError('Invalid product ID')
-        return data
-
     def get_products(self, obj):
         cart_products = obj.cartproduct_set.all()
-        return [self.get_product_data(product) for product in cart_products]
+        products_data = []
+        for cart_product in cart_products:
+            product_data = ProductSerializer(cart_product.products).data
+            product_data['amount'] = cart_product.amount
+            products_data.append(product_data)
+        return products_data
 
     def get_product_data(self, cart_product):
         product = cart_product.products
