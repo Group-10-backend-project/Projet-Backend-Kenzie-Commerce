@@ -12,10 +12,12 @@ class CartProductSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = CartProduct
-        fields = ['amount', 'products']
+        fields = ['id', 'amount', 'products']
+        extra_kwargs = {
+            'id': {'read_only': True}
+        }
 
     def create(self, validated_data):
-
         user = validated_data.pop('user')
         cart = Cart.objects.filter(user=user, is_active=True)
 
@@ -28,7 +30,8 @@ class CartProductSerializer(serializers.ModelSerializer):
         cart_product = CartProduct.objects.create(**validated_data)
         serialized_product = ProductSerializer(validated_data['products']).data
         serialized_product['amount'] = cart_product.amount
-        return {**validated_data, 'products_id': serialized_product}
+        cart_product['products'] = serialized_product
+        return cart_product
 
 
 class CartSerializer(serializers.ModelSerializer):
