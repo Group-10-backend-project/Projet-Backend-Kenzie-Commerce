@@ -5,30 +5,28 @@ from products.models import Product
 from users.serializers import UserSerializer
 from products.serializers import ProductSerializer
 from django.shortcuts import get_object_or_404
+import ipdb
 
 
 class CartProductSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = CartProduct
-        fields = ['amount', 'products_id']
+        fields = ['amount', 'products']
 
     def create(self, validated_data):
-        user = self.context['request'].user
-        validated_data['user'] = user
-        product_id = validated_data.get('products_id')
-        product = get_object_or_404(Product, pk=product_id)
+
+        user = validated_data.pop('user')
         cart = Cart.objects.filter(user=user, is_active=True)
+
         if not cart:
             cart = Cart.objects.create(user=user)
         else:
             cart = cart[0]
 
         validated_data['cart'] = cart
-        validated_data['products'] = product
-
         cart_product = CartProduct.objects.create(**validated_data)
-        serialized_product = ProductSerializer(product).data
+        serialized_product = ProductSerializer(validated_data['products']).data
         serialized_product['amount'] = cart_product.amount
         return {**validated_data, 'products_id': serialized_product}
 
