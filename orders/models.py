@@ -27,3 +27,7 @@ class Order(models.Model):
     saller = models.ForeignKey(
         "users.User", on_delete=models.PROTECT, related_name="Saller"
     )
+
+    cart = models.ForeignKey(
+        "carts.Cart", on_delete=models.PROTECT, related_name="Cart"
+    )
