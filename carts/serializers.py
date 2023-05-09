@@ -9,28 +9,28 @@ import ipdb
 
 
 class CartProductSerializer(serializers.ModelSerializer):
+    products = ProductSerializer(read_only=True)
+    products_id = serializers.IntegerField(write_only=True)
 
     class Meta:
         model = CartProduct
-        fields = ['id', 'amount', 'products']
+        fields = ['id', 'amount', 'products', 'products_id']
         extra_kwargs = {
-            'id': {'read_only': True}
+            'id': {'read_only': True},
         }
 
     def create(self, validated_data):
         user = validated_data.pop('user')
         cart = Cart.objects.filter(user=user, is_active=True)
-
         if not cart:
             cart = Cart.objects.create(user=user)
         else:
             cart = cart[0]
-
         validated_data['cart'] = cart
+        product_id = validated_data.pop('products_id')
+        product = Product.objects.get(pk=product_id)
+        validated_data['products'] = product
         cart_product = CartProduct.objects.create(**validated_data)
-        serialized_product = ProductSerializer(validated_data['products']).data
-        serialized_product['amount'] = cart_product.amount
-        cart_product['products'] = serialized_product
         return cart_product
 
 
