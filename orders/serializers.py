@@ -7,7 +7,7 @@ import ipdb
 
 class OrderSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
-        ipdb.set_trace()
+        # ipdb.set_trace()
         return Order.objects.create(**validated_data)
 
     def update(self, instance, validated_data):
@@ -31,11 +31,10 @@ class OrderSerializer(serializers.ModelSerializer):
 
         return instance
 
-    model = Order
-    fields = ["created_at", "user", "cart", "saller"]
-
-    extra_kwargs = {
-        "status": {
-            serializers.ChoiceField(choices=OrderOptions, default=OrderOptions.DEFAULT)
-        }
+    status = {
+        serializers.ChoiceField(choices=OrderOptions, default=OrderOptions.DEFAULT)
     }
+
+    class Meta:
+        model = Order
+        fields = ["id", "created_at", "user_id", "cart_id", "saller_id", "status"]
