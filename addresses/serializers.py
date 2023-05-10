@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from .models import Address
 from users.serializers import UserSerializer
-import ipdb
+from django.shortcuts import get_object_or_404
 
 
 class AddressSerializer(serializers.ModelSerializer):
@@ -9,12 +9,12 @@ class AddressSerializer(serializers.ModelSerializer):
         return Address.objects.create(**validated_data)
 
     def update(self, instance: Address, validated_data: dict) -> Address:
-
+        address = get_object_or_404(Address, user=instance)
         for key, value in validated_data.items():
-            setattr(instance, key, value)
+            setattr(address, key, value)
 
-        instance.save()
-        return instance
+        address.save()
+        return address
 
     user = UserSerializer(read_only=True)
 
