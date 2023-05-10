@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from .models import Address
 from users.serializers import UserSerializer
+import ipdb
 
 
 class AddressSerializer(serializers.ModelSerializer):
@@ -20,6 +21,3 @@ class AddressSerializer(serializers.ModelSerializer):
     class Meta:
         model = Address
         fields = ['street', 'number', 'city', 'user']
-        extra_kwargs = {
-            'user_id': {"source": "user"}
-        }
