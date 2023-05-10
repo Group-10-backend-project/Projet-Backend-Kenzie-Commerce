@@ -5,39 +5,69 @@ from products.models import Product
 from users.serializers import UserSerializer
 from products.serializers import ProductSerializer
 from django.shortcuts import get_object_or_404
+import ipdb
 
 
 class CartProductSerializer(serializers.ModelSerializer):
+    products = ProductSerializer(read_only=True)
+    products_id = serializers.IntegerField(write_only=True)
+
+    class Meta:
+        model = CartProduct
+        fields = ['id', 'amount', 'products', 'products_id']
+        extra_kwargs = {
+            'id': {'read_only': True},
+        }
+
     def create(self, validated_data):
         user = validated_data.pop('user')
         cart = Cart.objects.filter(user=user, is_active=True)
-
         if not cart:
             cart = Cart.objects.create(user=user)
         else:
             cart = cart[0]
-
         validated_data['cart'] = cart
-
-        return CartProduct.objects.create(**validated_data)
-
-    user = UserSerializer(read_only=True)
-
-    class Meta:
-        model = CartProduct
-        fields = ['amount', 'user', 'products_id']
-        extra_kwargs = {
-            'products_id': {'source': 'products'}
-        }
+        product_id = validated_data.pop('products_id')
+        product = Product.objects.get(pk=product_id)
+        validated_data['products'] = product
+        cart_product = CartProduct.objects.create(**validated_data)
+        return cart_product
 
 
 class CartSerializer(serializers.ModelSerializer):
-    products = ProductSerializer(many=True)
+    cart_products = CartProductSerializer(many=True, read_only=True)
     user = UserSerializer()
+
+    products = serializers.SerializerMethodField()
 
     class Meta:
         model = Cart
-        fields = ['is_active', 'user', 'products']
+        fields = ['is_active', 'user', 'products', 'cart_products']
         extra_kwargs = {
             'is_active': {'read_only': True}
         }
+
+    def get_products(self, obj):
+        cart_products = obj.cartproduct_set.all()
+        products_data = []
+        for cart_product in cart_products:
+            product_data = ProductSerializer(cart_product.products).data
+            product_data['amount'] = cart_product.amount
+            products_data.append(product_data)
+        return products_data
+
+    def get_product_data(self, cart_product):
+        product = cart_product.products
+        serialized_product = ProductSerializer(product).data
+        serialized_product['amount'] = cart_product.amount
+        return serialized_product
+
+    def create(self, validated_data):
+        user = self.context['request'].user
+        return Cart.objects.create(user=user, **validated_data)
+
+    def update(self, instance, validated_data):
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+        instance.save()
+        return instance
