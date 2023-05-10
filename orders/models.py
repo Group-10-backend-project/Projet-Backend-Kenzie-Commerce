@@ -1,7 +1,5 @@
 from django.db import models
 
-# Create your models here.
-
 
 class OrderOptions(models.TextChoices):
     PEDIDO_REALIZADO = "PEDIDO REALIZADO"
