@@ -32,7 +32,7 @@ class OrderSerializer(serializers.ModelSerializer):
         return instance
 
     model = Order
-    fields = ["created_at", "user_id", "cart_id", "saller_id"]
+    fields = ["created_at", "user", "cart", "saller"]
 
     extra_kwargs = {
         "status": {

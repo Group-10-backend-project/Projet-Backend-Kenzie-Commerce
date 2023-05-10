@@ -12,9 +12,12 @@ class OrderView(ListCreateAPIView):
     serializer_class = OrderSerializer
 
     def perform_create(self, serializer):
+        user = self.context["request"].user
+        body = self.context["request"].body
+        print(user)
         ipdb.set_trace()
-        logged_user = get_object_or_404(User, id=self.request.user.id)
-        serializer.save(user=logged_user)
+        serializer.save(user=self.request.user)
+        return super().perform_create(serializer)
 
 
 class OrderDetailView(RetrieveUpdateDestroyAPIView):
