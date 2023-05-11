@@ -42,7 +42,7 @@ class CartSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Cart
-        fields = ['is_active', 'user', 'products', 'cart_products']
+        fields = ['id', 'is_active', 'user', 'products', 'cart_products']
         extra_kwargs = {
             'is_active': {'read_only': True}
         }
