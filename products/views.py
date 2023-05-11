@@ -10,6 +10,8 @@ from rest_framework.permissions import IsAdminUser, IsAuthenticated
 
 
 class ProductClientView(generics.ListAPIView):
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated]
     serializer_class = ProductSerializer
     search_fields = ['id', 'name', 'category']
     filter_backends = [SearchFilter]
@@ -31,6 +33,7 @@ class ProductClientView(generics.ListAPIView):
 
 class ProductView(generics.ListCreateAPIView):
     authentication_classes = [JWTAuthentication]
+    permission_classes = [IsSellerOrAdmin]
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
     permission_classes = [

@@ -2,6 +2,7 @@ from rest_framework import serializers
 from rest_framework.serializers import SerializerMethodField
 from rest_framework.validators import UniqueValidator
 from .models import Product
+import ipdb
 
 
 class ProductSerializer(serializers.ModelSerializer):
@@ -35,5 +36,8 @@ class ProductSerializer(serializers.ModelSerializer):
             'user_id': {'read_only': True},
         }
 
-    def get_is_available(self, obj):
-        return obj.amount > 0
+    def get_is_available(self, obj: Product):
+        if obj.amount > 0:
+            return True
+        else:
+            return False
